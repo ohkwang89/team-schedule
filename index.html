@@ -13,7 +13,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕
 .team-title{font-size:15px;font-weight:600;color:#1a1a1a}
 .team-sub{font-size:12px;color:#888;margin-left:2px}
 .month-nav{display:flex;align-items:center;gap:6px}
-.month-nav button{width:30px;height:30px;border:1px solid #e0e0e0;background:#fff;border-radius:8px;cursor:pointer;font-size:14px;color:#555;display:flex;align-items:center;justify-content:center}
+.month-nav button{width:30px;height:30px;border:1px solid #e0e0e0;background:#fff;border-radius:8px;cursor:pointer;font-size:16px;color:#555;display:flex;align-items:center;justify-content:center}
 .month-nav button:hover{background:#f0f0f0}
 .month-title{font-size:16px;font-weight:600;min-width:110px;text-align:center;color:#1a1a1a}
 .tab-group{display:flex;gap:3px;background:#f0f0f0;border-radius:8px;padding:3px}
@@ -24,7 +24,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:10px;border:1px solid #e8e8e8}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#555}
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.status-bar{display:flex;gap:16px;margin-bottom:12px;padding:10px 16px;background:#fff;border-radius:10px;border:1px solid #e8e8e8;flex-wrap:wrap}
+.status-bar{display:flex;gap:16px;margin-bottom:12px;padding:10px 16px;background:#fff;border-radius:10px;border:1px solid #e8e8e8;flex-wrap:wrap;align-items:center}
 .stat-item{font-size:12px;color:#888}
 .stat-item span{font-weight:600;color:#1a1a1a}
 .sync-status{margin-left:auto;font-size:11px;color:#aaa;display:flex;align-items:center;gap:4px}
@@ -33,6 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕
 .sync-dot.loading{background:#BA7517;animation:pulse 1s infinite}
 .sync-dot.error{background:#E24B4A}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;background:#fff}
 .cal-dow{background:#fafafa;padding:8px 0;text-align:center;font-size:11px;font-weight:600;color:#999;border-bottom:1px solid #e8e8e8}
 .cal-dow:not(:last-child){border-right:1px solid #e8e8e8}
@@ -48,7 +49,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕
 .more-count{font-size:10px;color:#aaa;padding-left:2px}
 .tl-wrap{background:#fff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden}
 .tl-head{display:grid;grid-template-columns:90px repeat(5,minmax(0,1fr));background:#fafafa;border-bottom:1px solid #e8e8e8}
-.tl-hcell{padding:8px 8px;font-size:11px;font-weight:600;color:#999;border-right:1px solid #e8e8e8}
+.tl-hcell{padding:8px;font-size:11px;font-weight:600;color:#999;border-right:1px solid #e8e8e8}
 .tl-hcell:last-child{border-right:none}
 .tl-row{display:grid;grid-template-columns:90px repeat(5,minmax(0,1fr));border-bottom:1px solid #e8e8e8;min-height:44px}
 .tl-row:last-child{border-bottom:none}
@@ -78,7 +79,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.7);z-index:300;align-items:center;justify-content:center;font-size:14px;color:#555}
 .loading-overlay.open{display:flex}
 .spinner{width:20px;height:20px;border:2px solid #e0e0e0;border-top-color:#378ADD;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:10px}
-@keyframes spin{to{transform:rotate(360deg)}}
 .notice{font-size:11px;color:#aaa;margin-top:10px;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #e8e8e8;text-align:center}
 .team-badge{font-size:10px;padding:1px 6px;border-radius:4px;background:#FAEEDA;color:#854F0B;font-weight:500;margin-left:4px}
 @media(max-width:600px){
@@ -87,9 +87,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕
   .day-num{font-size:11px;width:18px;height:18px}
   .event-chip{font-size:9px;padding:1px 3px}
   .month-title{font-size:14px;min-width:90px}
-  .team-title{display:none}
+  .team-title,.team-sub{display:none}
   .tl-label{font-size:11px;padding:6px}
   .tl-hcell{font-size:10px;padding:6px}
+  .status-bar{gap:10px}
 }
 </style>
 </head>
@@ -182,233 +183,212 @@ const CATS = {
   report:{label:'주요 보고', color:'#854F0B', bg:'#FAEEDA'},
   education:{label:'교육/연수', color:'#534AB7', bg:'#EEEDFE'}
 };
-const DAYS = ['일','월','화','수','목','금','토'];
-const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const DAYS=['일','월','화','수','목','금','토'];
+const MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 
-let curYear = new Date().getFullYear();
-let curMonth = new Date().getMonth();
-let events = [];
-let editId = null;
-let view = 'month';
+let curYear=new Date().getFullYear(), curMonth=new Date().getMonth();
+let events=[], editId=null, view='month';
 
-function setSyncStatus(state, text) {
-  const dot = document.getElementById('sync-dot');
-  const t = document.getElementById('sync-text');
-  dot.className = 'sync-dot ' + state;
-  t.textContent = text;
+function setSyncStatus(state, text){
+  document.getElementById('sync-dot').className='sync-dot '+state;
+  document.getElementById('sync-text').textContent=text;
 }
 
-async function loadEvents() {
-  setSyncStatus('loading', '불러오는 중...');
-  try {
-    const res = await fetch(API_URL);
-    events = await res.json();
-    setSyncStatus('ok', '동기화됨');
-  } catch(e) {
-    setSyncStatus('error', '연결 오류');
-    events = [];
+function buildUrl(params){
+  const q=Object.entries(params).map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+  return API_URL+'?'+q;
+}
+
+async function loadEvents(){
+  setSyncStatus('loading','불러오는 중...');
+  try{
+    const res=await fetch(buildUrl({action:'load'}));
+    const json=await res.json();
+    events=Array.isArray(json)?json:[];
+    setSyncStatus('ok','동기화됨');
+  }catch(e){
+    setSyncStatus('error','연결 오류');
+    events=[];
   }
   render();
 }
 
-async function apiPost(data) {
-  const res = await fetch(API_URL, {
-    method:'POST',
-    body: JSON.stringify(data)
-  });
+async function apiCall(params){
+  const res=await fetch(buildUrl(params));
   return await res.json();
 }
 
-function render() {
+function render(){
   updateStatusBar();
-  if (view === 'month') renderMonth();
+  if(view==='month') renderMonth();
   else renderTeam();
 }
 
-function updateStatusBar() {
-  const ym = `${curYear}-${String(curMonth+1).padStart(2,'0')}`;
-  const m = events.filter(e => e.start && (e.start.slice(0,7)===ym || (e.end||e.start).slice(0,7)===ym));
-  document.getElementById('stat-total').innerHTML = `이번 달 일정 <span>${m.length}건</span>`;
-  document.getElementById('stat-vacation').innerHTML = `휴가/연차 <span>${m.filter(e=>e.cat==='vacation').length}건</span>`;
-  document.getElementById('stat-trip').innerHTML = `출장 <span>${m.filter(e=>e.cat==='trip').length}건</span>`;
-  document.getElementById('stat-meeting').innerHTML = `미팅/회의 <span>${m.filter(e=>e.cat==='meeting').length}건</span>`;
+function updateStatusBar(){
+  const ym=`${curYear}-${String(curMonth+1).padStart(2,'0')}`;
+  const m=events.filter(e=>e.start&&(e.start.slice(0,7)===ym||(e.end||e.start).slice(0,7)===ym));
+  document.getElementById('stat-total').innerHTML=`이번 달 일정 <span>${m.length}건</span>`;
+  document.getElementById('stat-vacation').innerHTML=`휴가/연차 <span>${m.filter(e=>e.cat==='vacation').length}건</span>`;
+  document.getElementById('stat-trip').innerHTML=`출장 <span>${m.filter(e=>e.cat==='trip').length}건</span>`;
+  document.getElementById('stat-meeting').innerHTML=`미팅/회의 <span>${m.filter(e=>e.cat==='meeting').length}건</span>`;
 }
 
-function renderMonth() {
-  const firstDay = new Date(curYear, curMonth, 1).getDay();
-  const daysInMonth = new Date(curYear, curMonth+1, 0).getDate();
-  const daysInPrev = new Date(curYear, curMonth, 0).getDate();
-  const today = new Date();
-  let html = '<div class="cal-grid">';
-  DAYS.forEach(d => { html += `<div class="cal-dow">${d}</div>`; });
-  const total = Math.ceil((firstDay+daysInMonth)/7)*7;
-  for (let i=0; i<total; i++) {
-    let day, isOther=false, yr=curYear, mo=curMonth;
-    if (i < firstDay) { day=daysInPrev-firstDay+i+1; isOther=true; mo=curMonth-1; if(mo<0){mo=11;yr--;} }
-    else if (i >= firstDay+daysInMonth) { day=i-firstDay-daysInMonth+1; isOther=true; mo=curMonth+1; if(mo>11){mo=0;yr++;} }
-    else { day=i-firstDay+1; }
-    const isToday = !isOther && day===today.getDate() && curYear===today.getFullYear() && curMonth===today.getMonth();
-    const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const dayEvs = events.filter(e => { const s=e.start,en=e.end||e.start; return ds>=s&&ds<=en; });
-    html += `<div class="cal-day${isOther?' other-month':''}${isToday?' today':''}" onclick="dayClick('${ds}')">`;
-    html += `<div class="day-num">${day}</div>`;
-    dayEvs.slice(0,3).forEach(ev => {
-      const c = CATS[ev.cat]||CATS.meeting;
-      html += `<div class="event-chip" style="background:${c.bg};color:${c.color};border-left:2px solid ${c.color}" onclick="event.stopPropagation();editEvent('${ev.id}')">${ev.title||c.label}</div>`;
+function renderMonth(){
+  const firstDay=new Date(curYear,curMonth,1).getDay();
+  const daysInMonth=new Date(curYear,curMonth+1,0).getDate();
+  const daysInPrev=new Date(curYear,curMonth,0).getDate();
+  const today=new Date();
+  let html='<div class="cal-grid">';
+  DAYS.forEach(d=>{html+=`<div class="cal-dow">${d}</div>`;});
+  const total=Math.ceil((firstDay+daysInMonth)/7)*7;
+  for(let i=0;i<total;i++){
+    let day,isOther=false,yr=curYear,mo=curMonth;
+    if(i<firstDay){day=daysInPrev-firstDay+i+1;isOther=true;mo=curMonth-1;if(mo<0){mo=11;yr--;}}
+    else if(i>=firstDay+daysInMonth){day=i-firstDay-daysInMonth+1;isOther=true;mo=curMonth+1;if(mo>11){mo=0;yr++;}}
+    else{day=i-firstDay+1;}
+    const isToday=!isOther&&day===today.getDate()&&curYear===today.getFullYear()&&curMonth===today.getMonth();
+    const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dayEvs=events.filter(e=>{const s=e.start,en=e.end||e.start;return ds>=s&&ds<=en;});
+    html+=`<div class="cal-day${isOther?' other-month':''}${isToday?' today':''}" onclick="dayClick('${ds}')">`;
+    html+=`<div class="day-num">${day}</div>`;
+    dayEvs.slice(0,3).forEach(ev=>{
+      const c=CATS[ev.cat]||CATS.meeting;
+      html+=`<div class="event-chip" style="background:${c.bg};color:${c.color};border-left:2px solid ${c.color}" onclick="event.stopPropagation();editEvent('${ev.id}')">${ev.title||c.label}</div>`;
     });
-    if (dayEvs.length > 3) html += `<div class="more-count">+${dayEvs.length-3}건 더</div>`;
-    html += '</div>';
+    if(dayEvs.length>3) html+=`<div class="more-count">+${dayEvs.length-3}건 더</div>`;
+    html+='</div>';
   }
-  html += '</div>';
-  document.getElementById('cal-view').innerHTML = html;
+  html+='</div>';
+  document.getElementById('cal-view').innerHTML=html;
 }
 
-function renderTeam() {
-  const daysInMonth = new Date(curYear, curMonth+1, 0).getDate();
-  let mondays = [];
-  for (let d=1; d<=daysInMonth; d++) {
-    if (new Date(curYear,curMonth,d).getDay()===1) mondays.push(d);
-  }
-  const weeks = mondays.map(m => {
-    const days=[]; for(let d=m;d<m+5&&d<=daysInMonth;d++) days.push(d); return days;
-  }).filter(w=>w.length>0).slice(0,5);
-  let html = '<div class="tl-wrap"><div class="tl-head"><div class="tl-hcell">팀원</div>';
-  weeks.forEach(w => { html += `<div class="tl-hcell">${w[0]}일~${w[w.length-1]}일</div>`; });
-  html += '</div>';
-  MEMBERS.forEach(m => {
-    html += `<div class="tl-row"><div class="tl-label"><div class="tl-avatar" style="background:${m.bg};color:${m.color}">${m.name[0]}</div>${m.name}${m.team?'<span class="team-badge">팀</span>':''}</div>`;
-    weeks.forEach(w => {
-      html += '<div class="tl-cell">';
-      const wEvs = events.filter(ev => {
-        if (ev.member !== m.id) return false;
-        return w.some(d => {
-          const ds=`${curYear}-${String(curMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-          return ds>=ev.start&&ds<=(ev.end||ev.start);
-        });
+function renderTeam(){
+  const daysInMonth=new Date(curYear,curMonth+1,0).getDate();
+  let mondays=[];
+  for(let d=1;d<=daysInMonth;d++){if(new Date(curYear,curMonth,d).getDay()===1)mondays.push(d);}
+  const weeks=mondays.map(m=>{const days=[];for(let d=m;d<m+5&&d<=daysInMonth;d++)days.push(d);return days;}).filter(w=>w.length>0).slice(0,5);
+  let html='<div class="tl-wrap"><div class="tl-head"><div class="tl-hcell">팀원</div>';
+  weeks.forEach(w=>{html+=`<div class="tl-hcell">${w[0]}일~${w[w.length-1]}일</div>`;});
+  html+='</div>';
+  MEMBERS.forEach(m=>{
+    html+=`<div class="tl-row"><div class="tl-label"><div class="tl-avatar" style="background:${m.bg};color:${m.color}">${m.name[0]}</div>${m.name}${m.team?'<span class="team-badge">팀</span>':''}</div>`;
+    weeks.forEach(w=>{
+      html+='<div class="tl-cell">';
+      const wEvs=events.filter(ev=>{
+        if(ev.member!==m.id)return false;
+        return w.some(d=>{const ds=`${curYear}-${String(curMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;return ds>=ev.start&&ds<=(ev.end||ev.start);});
       });
-      wEvs.slice(0,2).forEach(ev => {
-        const c=CATS[ev.cat]||CATS.meeting;
-        html += `<div class="tl-chip" style="background:${c.bg};color:${c.color};border-left:2px solid ${c.color}">${ev.title||c.label}</div>`;
-      });
-      if (wEvs.length>2) html += `<div style="font-size:10px;color:#aaa">+${wEvs.length-2}</div>`;
-      html += '</div>';
+      wEvs.slice(0,2).forEach(ev=>{const c=CATS[ev.cat]||CATS.meeting;html+=`<div class="tl-chip" style="background:${c.bg};color:${c.color};border-left:2px solid ${c.color}">${ev.title||c.label}</div>`;});
+      if(wEvs.length>2)html+=`<div style="font-size:10px;color:#aaa">+${wEvs.length-2}</div>`;
+      html+='</div>';
     });
-    html += '</div>';
+    html+='</div>';
   });
-  html += '</div>';
-  document.getElementById('team-view').innerHTML = html;
+  html+='</div>';
+  document.getElementById('team-view').innerHTML=html;
 }
 
-function switchView(v) {
-  view = v;
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&v==='month')||(i===1&&v==='team')));
-  document.getElementById('cal-view').style.display = v==='month'?'':'none';
-  document.getElementById('team-view').style.display = v==='team'?'':'none';
+function switchView(v){
+  view=v;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&v==='month')||(i===1&&v==='team')));
+  document.getElementById('cal-view').style.display=v==='month'?'':'none';
+  document.getElementById('team-view').style.display=v==='team'?'':'none';
   render();
 }
 
-function updateTitle() {
-  document.getElementById('month-title').textContent = `${curYear}년 ${MONTHS[curMonth]}`;
+function updateTitle(){document.getElementById('month-title').textContent=`${curYear}년 ${MONTHS[curMonth]}`;}
+document.getElementById('prev-btn').onclick=()=>{if(--curMonth<0){curMonth=11;curYear--;}updateTitle();render();};
+document.getElementById('next-btn').onclick=()=>{if(++curMonth>11){curMonth=0;curYear++;}updateTitle();render();};
+
+function populateMembers(selectedId){
+  document.getElementById('f-member').innerHTML=MEMBERS.map(m=>`<option value="${m.id}"${m.id===selectedId?' selected':''}>${m.name}</option>`).join('');
 }
 
-document.getElementById('prev-btn').onclick = () => { if(--curMonth<0){curMonth=11;curYear--;} updateTitle();render(); };
-document.getElementById('next-btn').onclick = () => { if(++curMonth>11){curMonth=0;curYear++;} updateTitle();render(); };
-
-function populateMembers(selectedId) {
-  document.getElementById('f-member').innerHTML = MEMBERS.map(m =>
-    `<option value="${m.id}"${m.id===selectedId?' selected':''}>${m.name}</option>`
-  ).join('');
-}
-
-function openAddModal(ds) {
-  editId = null;
-  document.getElementById('modal-title').textContent = '일정 추가';
-  document.getElementById('del-btn').style.display = 'none';
-  document.getElementById('f-title').value = '';
-  document.getElementById('f-memo').value = '';
-  document.getElementById('f-cat').value = 'meeting';
-  const d = ds || `${curYear}-${String(curMonth+1).padStart(2,'0')}-01`;
-  document.getElementById('f-start').value = d;
-  document.getElementById('f-end').value = d;
+function openAddModal(ds){
+  editId=null;
+  document.getElementById('modal-title').textContent='일정 추가';
+  document.getElementById('del-btn').style.display='none';
+  document.getElementById('f-title').value='';
+  document.getElementById('f-memo').value='';
+  document.getElementById('f-cat').value='meeting';
+  const d=ds||`${curYear}-${String(curMonth+1).padStart(2,'0')}-01`;
+  document.getElementById('f-start').value=d;
+  document.getElementById('f-end').value=d;
   populateMembers('m2');
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function editEvent(id) {
-  const ev = events.find(e => e.id===id);
-  if (!ev) return;
-  editId = id;
-  document.getElementById('modal-title').textContent = '일정 수정';
-  document.getElementById('del-btn').style.display = 'block';
-  document.getElementById('f-title').value = ev.title||'';
-  document.getElementById('f-cat').value = ev.cat;
-  document.getElementById('f-start').value = ev.start;
-  document.getElementById('f-end').value = ev.end||ev.start;
-  document.getElementById('f-memo').value = ev.memo||'';
+function editEvent(id){
+  const ev=events.find(e=>e.id===id);
+  if(!ev)return;
+  editId=id;
+  document.getElementById('modal-title').textContent='일정 수정';
+  document.getElementById('del-btn').style.display='block';
+  document.getElementById('f-title').value=ev.title||'';
+  document.getElementById('f-cat').value=ev.cat;
+  document.getElementById('f-start').value=ev.start;
+  document.getElementById('f-end').value=ev.end||ev.start;
+  document.getElementById('f-memo').value=ev.memo||'';
   populateMembers(ev.member);
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function dayClick(ds) { openAddModal(ds); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editId=null; }
+function dayClick(ds){openAddModal(ds);}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');editId=null;}
 
-async function saveEvent() {
-  const title = document.getElementById('f-title').value.trim();
-  const cat = document.getElementById('f-cat').value;
-  const start = document.getElementById('f-start').value;
-  const end = document.getElementById('f-end').value;
-  const member = document.getElementById('f-member').value;
-  const memo = document.getElementById('f-memo').value.trim();
-  if (!title) { alert('제목을 입력하세요'); return; }
-  if (!start) { alert('날짜를 입력하세요'); return; }
-  const id = editId || 'ev_' + Date.now();
-  const data = {action:'save', id, title, cat, start, end:end||start, member, memo};
-  document.getElementById('save-btn').disabled = true;
+async function saveEvent(){
+  const title=document.getElementById('f-title').value.trim();
+  const cat=document.getElementById('f-cat').value;
+  const start=document.getElementById('f-start').value;
+  const end=document.getElementById('f-end').value;
+  const member=document.getElementById('f-member').value;
+  const memo=document.getElementById('f-memo').value.trim();
+  if(!title){alert('제목을 입력하세요');return;}
+  if(!start){alert('날짜를 입력하세요');return;}
+  const id=editId||'ev_'+Date.now();
+  const params={action:'save',id,title,cat,start,end:end||start,member,memo};
+  document.getElementById('save-btn').disabled=true;
   document.getElementById('loading-overlay').classList.add('open');
-  try {
-    await apiPost(data);
-    if (editId) {
-      const idx = events.findIndex(e=>e.id===editId);
-      if (idx>=0) events[idx] = data;
-    } else {
-      events.push(data);
-    }
-    setSyncStatus('ok', '저장됨');
-  } catch(e) {
-    setSyncStatus('error', '저장 실패');
-    alert('저장에 실패했습니다. 다시 시도해 주세요.');
+  try{
+    await apiCall(params);
+    if(editId){const idx=events.findIndex(e=>e.id===editId);if(idx>=0)events[idx]={...params};}
+    else{events.push({...params});}
+    setSyncStatus('ok','저장됨');
+    closeModal();
+    render();
+  }catch(e){
+    setSyncStatus('error','저장 실패');
+    alert('저장에 실패했습니다. Apps Script를 재배포했는지 확인해 주세요.');
   }
   document.getElementById('loading-overlay').classList.remove('open');
-  document.getElementById('save-btn').disabled = false;
-  closeModal();
-  render();
+  document.getElementById('save-btn').disabled=false;
 }
 
-async function deleteEvent() {
-  if (!editId) return;
-  if (!confirm('이 일정을 삭제할까요?')) return;
+async function deleteEvent(){
+  if(!editId)return;
+  if(!confirm('이 일정을 삭제할까요?'))return;
   document.getElementById('loading-overlay').classList.add('open');
-  try {
-    await apiPost({action:'delete', id:editId});
-    events = events.filter(e=>e.id!==editId);
-    setSyncStatus('ok', '삭제됨');
-  } catch(e) {
-    setSyncStatus('error', '삭제 실패');
+  try{
+    await apiCall({action:'delete',id:editId});
+    events=events.filter(e=>e.id!==editId);
+    setSyncStatus('ok','삭제됨');
+  }catch(e){
+    setSyncStatus('error','삭제 실패');
   }
   document.getElementById('loading-overlay').classList.remove('open');
   closeModal();
   render();
 }
 
-document.getElementById('f-start').addEventListener('change', () => {
+document.getElementById('f-start').addEventListener('change',()=>{
   const s=document.getElementById('f-start').value;
   const e=document.getElementById('f-end').value;
-  if (!e||e<s) document.getElementById('f-end').value=s;
+  if(!e||e<s)document.getElementById('f-end').value=s;
 });
 
 updateTitle();
 loadEvents();
-setInterval(loadEvents, 60000);
+setInterval(loadEvents,60000);
 </script>
 </body>
 </html>
